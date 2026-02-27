@@ -18,8 +18,6 @@ def customer_tickets(conn, customer_id):
     Include only tickets purchased by the given customer_id.
     Order results by film title alphabetically.
     """
-
-    def customer_tickets(conn, customer_id):
     cur = conn.cursor()
 
     query = """
@@ -48,7 +46,7 @@ def screening_sales(conn):
     Include all screenings, even if tickets_sold is 0.
     Order results by tickets_sold descending.
     """
-    def screening_sales(conn):
+
     cur = conn.cursor()
 
     query = """
