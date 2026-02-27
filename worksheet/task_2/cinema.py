@@ -35,7 +35,7 @@ def screening_sales(conn):
     Order results by tickets_sold descending.
     """
     cursor = conn.cursor()
-    return cursor.execute("SELECT screenings.screening_id, films.title, COUNT(tickets.ticket_id) AS tickets_sold FROM films JOIN screenings ON films.film_id = screenings.screening_id JOIN tickets ON screenings.screening_id = tickets.screening_id GROUP BY screenings.screening_id").fetchall()
+    return cursor.execute("SELECT screenings.screening_id, films.title, COUNT(tickets.ticket_id) AS tickets_sold FROM films JOIN screenings ON films.film_id = screenings.screening_id JOIN tickets ON screenings.screening_id = tickets.screening_id GROUP BY screenings.screening_id ORDER BY tickets_sold DESC").fetchall()
 
 
     pass
