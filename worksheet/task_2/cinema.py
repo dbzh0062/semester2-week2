@@ -19,11 +19,25 @@ def customer_tickets(conn, customer_id):
     Order results by film title alphabetically.
     """
 
-    conn = sqlite3.connect('tickets.db')  # Creates a new database file if it doesn’t exist
-    cursor = conn.cursor()
+    def customer_tickets(conn, customer_id):
+    cur = conn.cursor()
 
-    return cursor.execute("SELECT films.title, screenings.screen, tickets.price FROM films JOIN screenings ON films.film_id = screenings.screening_id JOIN tickets ON screenings.screening_id = tickets.screening_id JOIN customers ON tickets.customer_id = customers.customer_id AND customers.customer_id = ? ",(customer_id,)).fetchall()
+    query = """
+        SELECT 
+            f.title,
+            s.screen,
+            t.price
+        FROM tickets t
+        JOIN screenings s 
+            ON t.screening_id = s.screening_id
+        JOIN films f
+            ON s.film_id = f.film_id
+        WHERE t.customer_id = ?
+        ORDER BY f.title ASC;
+    """
 
+    cur.execute(query, (customer_id,))
+    return cur.fetchall()
 
 
 def screening_sales(conn):
@@ -34,11 +48,25 @@ def screening_sales(conn):
     Include all screenings, even if tickets_sold is 0.
     Order results by tickets_sold descending.
     """
-    cursor = conn.cursor()
-    return cursor.execute("SELECT screenings.screening_id, films.title, COUNT(tickets.ticket_id) AS tickets_sold FROM films JOIN screenings ON films.film_id = screenings.screening_id JOIN tickets ON screenings.screening_id = tickets.screening_id GROUP BY screenings.screening_id ORDER BY tickets_sold DESC").fetchall()
+    def screening_sales(conn):
+    cur = conn.cursor()
 
+    query = """
+        SELECT 
+            s.screening_id,
+            f.title,
+            COUNT(t.ticket_id) AS tickets_sold
+        FROM screenings s
+        JOIN films f 
+            ON s.film_id = f.film_id
+        LEFT JOIN tickets t 
+            ON s.screening_id = t.screening_id
+        GROUP BY s.screening_id, f.title
+        ORDER BY tickets_sold DESC;
+    """
 
-    pass
+    cur.execute(query)
+    return cur.fetchall()
 
 
 def top_customers_by_spend(conn, limit):
