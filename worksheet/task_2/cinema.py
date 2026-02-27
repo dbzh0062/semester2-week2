@@ -18,7 +18,12 @@ def customer_tickets(conn, customer_id):
     Include only tickets purchased by the given customer_id.
     Order results by film title alphabetically.
     """
-    pass
+
+    conn = sqlite3.connect('tickets.db')  # Creates a new database file if it doesn’t exist
+    cursor = conn.cursor()
+
+    return cursor.execute("SELECT films.title, screenings.screen, tickets.price FROM films JOIN screenings ON films.film_id = screenings.screening_id JOIN tickets ON screenings.screening_id = tickets.screening_id JOIN customers ON tickets.customer_id = customers.customer_id AND customers.customer_id = ? ",(customer_id,)).fetchall()
+
 
 
 def screening_sales(conn):
@@ -29,6 +34,10 @@ def screening_sales(conn):
     Include all screenings, even if tickets_sold is 0.
     Order results by tickets_sold descending.
     """
+    cursor = conn.cursor()
+    return cursor.execute("SELECT screenings.screening_id, films.title, COUNT(tickets.ticket_id) AS tickets_sold FROM films JOIN screenings ON films.film_id = screenings.screening_id JOIN tickets ON screenings.screening_id = tickets.screening_id GROUP BY screenings.screening_id").fetchall()
+
+
     pass
 
 
@@ -42,4 +51,9 @@ def top_customers_by_spend(conn, limit):
     Order by total_spent descending.
     Limit the number of rows returned to `limit`.
     """
+
+    cursor = conn.cursor()
+    return cursor.execute("SELECT customers.customer_name, SUM(tickets.price) AS total_spent FROM tickets JOIN customers ON tickets.customer_id = customers.customer_id GROUP BY tickets.customer_id ORDER BY total_spent DESC LIMIT ?", (limit,)).fetchall()
+
+
     pass
